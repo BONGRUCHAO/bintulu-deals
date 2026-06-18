@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import json
 from datetime import datetime
 
+
 def fetch_econsave():
     url = "https://www.syioknya.com/location/outlet/econsave/econsave-bintulu"
     r = requests.get(url, timeout=10)
@@ -25,9 +26,20 @@ def fetch_econsave():
 def run():
     all_deals = []
     all_deals += fetch_econsave()
+    old_titles = []
+    new_titles = []
 
     with open("data.json", "w", encoding="utf-8") as f:
         json.dump(all_deals, f, ensure_ascii=False, indent=2)
 
 if __name__ == "__main__":
     run()
+
+from send_push import send_all
+
+send_all(
+    "Bintulu新优惠",
+    title
+)
+
+
