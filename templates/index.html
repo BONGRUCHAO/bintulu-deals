@@ -1,17 +1,35 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Bintulu Supermarket Deals</title>
-</head>
-<body>
-    <h2>Bintulu 超市优惠监控</h2>
+<button onclick="enablePush()">
+开启优惠通知
+</button>
 
-    {% for d in deals %}
-        <div style="border:1px solid #ccc; margin:10px; padding:10px;">
-            <b>{{ d.title }}</b><br>
-            来源: {{ d.source }}<br>
-            时间: {{ d.time }}
-        </div>
-    {% endfor %}
-</body>
-</html>
+<script>
+async function enablePush(){
+
+  const permission =
+      await Notification.requestPermission();
+
+  if(permission !== 'granted'){
+      alert("未授权通知");
+      return;
+  }
+
+  const reg =
+      await navigator.serviceWorker.register('/static/sw.js');
+
+  const sub =
+      await reg.pushManager.subscribe({
+          userVisibleOnly:true,
+          applicationServerKey:'你的VAPID公钥'
+      });
+
+  await fetch('/subscribe',{
+      method:'POST',
+      headers:{
+          'Content-Type':'application/json'
+      },
+      body:JSON.stringify(sub)
+  });
+
+  alert('通知已开启');
+}
+</script>
