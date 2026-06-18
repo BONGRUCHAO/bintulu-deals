@@ -1,11 +1,25 @@
-<h2>Bintulu 超市优惠</h2>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Bintulu Deals</title>
+</head>
 
+<body>
+
+<h2>Bintulu 超市优惠监控</h2>
+
+<!-- 数据列表 -->
 {% for d in deals %}
-  <div>
-    {{ d.title }}
-  </div>
+<div style="border:1px solid #ccc;padding:10px;margin:10px;">
+    <b>{{ d.title }}</b><br>
+    <small>{{ d.time }}</small>
+</div>
 {% endfor %}
 
+<hr>
+
+<!-- 通知按钮 -->
 <button onclick="enablePush()">
 开启优惠通知
 </button>
@@ -15,24 +29,27 @@ async function enablePush(){
 
   const permission = await Notification.requestPermission();
 
-  if(permission !== 'granted'){
-      alert("未授权");
+  if(permission !== "granted"){
+      alert("未允许通知");
       return;
   }
 
-  const reg = await navigator.serviceWorker.register('/static/sw.js');
+  const reg = await navigator.serviceWorker.register("/static/sw.js");
 
   const sub = await reg.pushManager.subscribe({
       userVisibleOnly:true,
-      applicationServerKey:'你的VAPID公钥'
+      applicationServerKey:"YOUR_VAPID_PUBLIC_KEY"
   });
 
-  await fetch('/subscribe',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
+  await fetch("/subscribe",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
       body:JSON.stringify(sub)
   });
 
   alert("通知已开启");
 }
 </script>
+
+</body>
+</html>
