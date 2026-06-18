@@ -3,17 +3,19 @@ import json
 
 app = Flask(__name__)
 
+# 首页
 @app.route("/")
 def index():
     try:
         with open("data.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
+            deals = json.load(f)
     except:
-        data = []
+        deals = []
 
-    return render_template("index.html", deals=data)
+    return render_template("index.html", deals=deals)
 
 
+# 保存浏览器订阅
 @app.route("/subscribe", methods=["POST"])
 def subscribe():
     sub = request.json
