@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bintulu Supermarket Deals</title>
+</head>
+<body>
+    <h2>Bintulu 超市优惠监控</h2>
+
+    {% for d in deals %}
+        <div style="border:1px solid #ccc; margin:10px; padding:10px;">
+            <b>{{ d.title }}</b><br>
+            来源: {{ d.source }}<br>
+            时间: {{ d.time }}
+        </div>
+    {% endfor %}
+</body>
+</html>
