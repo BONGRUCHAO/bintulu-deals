@@ -5,10 +5,8 @@ import subprocess
 # ====== 1. 模拟抓取新数据 ======
 # 以后这里改成真实抓网页逻辑
 new_deals = [
-    {"title": "TEST Econsave Sale"},
-    {"title": "TEST Emart Promo"}
+    {"title": "NEW PROMO 2026"}
 ]
-
 # ====== 2. 读取旧数据 ======
 if os.path.exists("data.json"):
     with open("data.json", "r", encoding="utf-8") as f:
