@@ -1,3 +1,11 @@
+<h2>Bintulu 超市优惠</h2>
+
+{% for d in deals %}
+  <div>
+    {{ d.title }}
+  </div>
+{% endfor %}
+
 <button onclick="enablePush()">
 开启优惠通知
 </button>
@@ -5,31 +13,26 @@
 <script>
 async function enablePush(){
 
-  const permission =
-      await Notification.requestPermission();
+  const permission = await Notification.requestPermission();
 
   if(permission !== 'granted'){
-      alert("未授权通知");
+      alert("未授权");
       return;
   }
 
-  const reg =
-      await navigator.serviceWorker.register('/static/sw.js');
+  const reg = await navigator.serviceWorker.register('/static/sw.js');
 
-  const sub =
-      await reg.pushManager.subscribe({
-          userVisibleOnly:true,
-          applicationServerKey:'你的VAPID公钥'
-      });
+  const sub = await reg.pushManager.subscribe({
+      userVisibleOnly:true,
+      applicationServerKey:'你的VAPID公钥'
+  });
 
   await fetch('/subscribe',{
       method:'POST',
-      headers:{
-          'Content-Type':'application/json'
-      },
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify(sub)
   });
 
-  alert('通知已开启');
+  alert("通知已开启");
 }
 </script>
