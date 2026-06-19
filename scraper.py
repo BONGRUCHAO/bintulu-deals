@@ -2,6 +2,7 @@ import os
 import json
 import feedparser
 import subprocess
+import time
 
 # ===== 1️⃣ RSS 地址 =====
 RSS_URL = "https://rss.app/feeds/pCThJgjEUu66piOP.xml"
