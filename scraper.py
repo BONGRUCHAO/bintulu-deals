@@ -25,12 +25,10 @@ for post in posts[:5]:
             "title": text[:120]
         })
 
-# 读取旧数据
-if os.path.exists("data.json"):
-    with open("data.json", "r", encoding="utf-8") as f:
-        old_deals = json.load(f)
-else:
-    old_deals = []
+
+if not os.path.exists("data.json"):
+    with open("data.json", "w", encoding="utf-8") as f:
+        json.dump([], f)
 
 # 对比
 if new_deals != old_deals:
