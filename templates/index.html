@@ -1,62 +1,65 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Bintulu Deals</title>
-</head>
+<h2>Bintulu 今日促销精选</h2>
+<p style="color: gray; font-size: 14px;">
+    共 {{ deals|length }} 条有效优惠（已过滤非促销内容）
+</p>
 
-<body>
-
-<h2>Bintulu 超市优惠监控</h2>
-
-<!-- 数据列表 -->
 {% for d in deals %}
-<div style="border:1px solid #ccc;padding:15px;margin:15px;">
+<div style="
+    border: 2px solid #e0e0e0; 
+    border-radius: 8px; 
+    padding: 15px; 
+    margin: 20px auto; 
+    max-width: 500px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+">
 
-    <h3>{{ d.title }}</h3>
+    <h3 style="margin: 0 0 10px 0;">{{ d.title }}</h3>
 
     {% if d.image %}
-        <img src="{{ d.image }}" width="300">
+        <img src="{{ d.image }}" 
+             style="width:100%; border-radius:6px;"
+             alt="促销图">
     {% endif %}
 
-    <br>
-    <a href="{{ d.link }}" target="_blank">查看原帖</a>
+    <div style="margin-top:10px;">
+        
+        {# 🔥 高亮匹配到的关键词 #}
+        {% if d.matched_keywords %}
+            <span style="
+                background: #ffe066; 
+                color: #333;
+                padding: 3px 8px; 
+                border-radius: 12px;
+                font-size: 12px;
+            ">
+                {{ d.matched_keywords | join(' · ') }}
+            </span>
+        {% endif %}
+
+        <a href="{{ d.link }}" 
+           target="_blank" 
+           style="
+               display: inline-block; 
+               margin-top: 10px; 
+               color: #0066cc;
+               text-decoration: none;
+           ">
+            🔗 查看原帖 →
+        </a>
+    </div>
 
 </div>
 {% endfor %}
+
 <hr>
-
-<!-- 通知按钮 -->
-<button onclick="enablePush()">
-开启优惠通知
+<button onclick="enablePush()" 
+        style="
+            background: #000; 
+            color: #fff; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px;
+            cursor: pointer;
+        ">
+    开启实时通知
 </button>
-
-<script>
-async function enablePush(){
-
-  const permission = await Notification.requestPermission();
-
-  if(permission !== "granted"){
-      alert("未允许通知");
-      return;
-  }
-
-  const reg = await navigator.serviceWorker.register("/static/sw.js");
-
-  const sub = await reg.pushManager.subscribe({
-      userVisibleOnly:true,
-      applicationServerKey:"YOUR_VAPID_PUBLIC_KEY"
-  });
-
-  await fetch("/subscribe",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(sub)
-  });
-
-  alert("通知已开启");
-}
-</script>
-
-</body>
-</html>
