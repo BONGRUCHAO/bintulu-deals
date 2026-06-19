@@ -11,12 +11,19 @@
 
 <!-- 数据列表 -->
 {% for d in deals %}
-<div style="border:1px solid #ccc;padding:10px;margin:10px;">
-    <b>{{ d.title }}</b><br>
-    <small>{{ d.time }}</small>
+<div style="border:1px solid #ccc;padding:15px;margin:15px;">
+
+    <h3>{{ d.title }}</h3>
+
+    {% if d.image %}
+        <img src="{{ d.image }}" width="300">
+    {% endif %}
+
+    <br>
+    <a href="{{ d.link }}" target="_blank">查看原帖</a>
+
 </div>
 {% endfor %}
-
 <hr>
 
 <!-- 通知按钮 -->
