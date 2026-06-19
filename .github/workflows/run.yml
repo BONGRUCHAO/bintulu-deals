@@ -27,6 +27,13 @@ jobs:
       - name: Run scraper
         run: python scraper.py
 
+      - name: Debug list files
+        run: |
+          echo "===== 当前目录 ====="
+          pwd
+          echo "===== 文件列表 ====="
+          ls -la
+
       - name: Commit update
         run: |
           git config --global user.name "github-actions[bot]"
