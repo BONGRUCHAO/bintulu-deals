@@ -1,56 +1,45 @@
-import requests
-from bs4 import BeautifulSoup
+import feedparser # 需安装
 import json
 import os
 import subprocess
 
-URL = "https://mbasic.facebook.com/ccfreshwholesale"
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-}
+# ⭐️ 替换成你在 RSS.app 申请到的真实链接
+RSS_URL = "https://rss.app/feeds/pCThJgjEUu66piOP.xml"
 
 try:
-    print(f"正在请求: {URL}")
-    response = requests.get(URL, headers=headers, timeout=15)
-    print(f"状态码: {response.status_code}")
+    print(f"正在请求 RSS 源: {RSS_URL}")
+    feed = feedparser.parse(RSS_URL)
     
-    soup = BeautifulSoup(response.text, "html.parser")
-    posts = soup.find_all("div", {"data-ft": True})
-    print(f"找到帖子数量: {len(posts)}")
-
     new_deals = []
-    for post in posts[:5]:
-        text = post.get_text(separator=" ", strip=True)
-        if len(text) > 10:
-            new_deals.append({"title": text[:120]})
-
-    # --- ⭐️ 关键修改开始 ⭐️ ---
+    # 抓取最新的 5 条帖子
+    for entry in feed.entries[:5]:
+        new_deals.append({
+            "title": entry.title[:120], 
+            "link": entry.link
+        })
     
-    # 1. 强制检查：如果文件不存在，直接创建它（即使是空的）
-    if not os.path.exists("data.json"):
-        print("首次运行：强制创建 data.json")
-        with open("data.json", "w", encoding="utf-8") as f:
-            json.dump(new_deals, f, ensure_ascii=False, indent=2)
-        # 强制触发一次提交
-        subprocess.run(["python", "send_push.py"])
-        exit(0) # 退出，交给 Git 处理
+    print(f"成功抓取到 {len(new_deals)} 条优惠")
 
-    # 2. 如果文件存在，再进行对比
-    with open("data.json", "r", encoding="utf-8") as f:
-        try:
-            old_deals = json.load(f)
-        except:
-            old_deals = []
+    # 读取旧数据
+    if os.path.exists("data.json"):
+        with open("data.json", "r", encoding="utf-8") as f:
+            try:
+                old_deals = json.load(f)
+            except:
+                old_deals = []
+    else:
+        old_deals = []
 
+    # 对比并更新
     if new_deals != old_deals:
         print("✅ 发现新优惠，更新 data.json")
         with open("data.json", "w", encoding="utf-8") as f:
             json.dump(new_deals, f, ensure_ascii=False, indent=2)
-        subprocess.run(["python", "send_push.py"])
+        
+        if os.path.exists("send_push.py"):
+            subprocess.run(["python", "send_push.py"])
     else:
-        print("💤 数据没有变化，无需更新")
-
-    # --- ⭐️ 关键修改结束 ⭐️ ---
+        print("💤 数据没有变化")
 
 except Exception as e:
     print(f"🚨 错误: {e}")
