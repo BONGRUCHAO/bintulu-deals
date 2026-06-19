@@ -38,16 +38,12 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # ⭐️ 关键修改：检查文件是否存在，存在才 add
+
           if [ -f data.json ]; then
-            git add data.json
-            if git diff --quiet; then
-              echo "No changes to commit"
-            else
-              git commit -m "Auto update deals [skip ci]"
-              git push
-            fi
+            git add -f data.json
+            git status
+            git commit -m "Auto update deals [skip ci]" || echo "No changes"
+            git push
           else
-            echo "data.json was not created this time, skipping commit."
+            echo "❌ data.json not found!"
           fi
