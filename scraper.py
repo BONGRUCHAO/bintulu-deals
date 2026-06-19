@@ -1,48 +1,51 @@
-import feedparser # 需安装
-import json
 import os
+import json
+import feedparser
 import subprocess
 
-# ⭐️ 替换成你在 RSS.app 申请到的真实链接
+# ===== 1️⃣ RSS 地址 =====
 RSS_URL = "https://rss.app/feeds/pCThJgjEUu66piOP.xml"
 
-try:
-    print(f"正在请求 RSS 源: {RSS_URL}")
-    feed = feedparser.parse(RSS_URL)
-    
-    new_deals = []
-    # 抓取最新的 5 条帖子
-    for entry in feed.entries[:5]:
-        new_deals.append({
-            "title": entry.title[:120], 
-            "link": entry.link
-        })
-    
-    print(f"成功抓取到 {len(new_deals)} 条优惠")
+print("正在请求 RSS 源:", RSS_URL)
 
-    # 读取旧数据
-    if os.path.exists("data.json"):
-        with open("data.json", "r", encoding="utf-8") as f:
-            try:
-                old_deals = json.load(f)
-            except:
-                old_deals = []
-    else:
-        old_deals = []
+feed = feedparser.parse(RSS_URL)
 
-    # 对比并更新
-    if new_deals != old_deals:
-        print("✅ 发现新优惠，更新 data.json")
-        with open("data.json", "w", encoding="utf-8") as f:
-            json.dump(new_deals, f, ensure_ascii=False, indent=2)
-        
-        if os.path.exists("send_push.py"):
-            try:
-                subprocess.run(["python", "send_push.py"], check=True)
-            except Exception as e:
-                print(f"⚠️ 通知发送失败，但不影响数据更新: {e}")
-    else:
-        print("💤 数据没有变化")
+new_deals = []
 
-except Exception as e:
-    print(f"🚨 错误: {e}")
+for entry in feed.entries[:5]:
+    new_deals.append({
+        "title": entry.title,
+        "link": entry.link
+    })
+
+print("成功抓取到", len(new_deals), "条优惠")
+
+# ===== 2️⃣ 绝对路径写入 =====
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.join(BASE_DIR, "data.json")
+
+# 读取旧数据
+if os.path.exists(file_path):
+    with open(file_path, "r", encoding="utf-8") as f:
+        old_deals = json.load(f)
+else:
+    old_deals = []
+
+# 对比
+if new_deals != old_deals:
+
+    print("✅ 发现新优惠，更新 data.json")
+
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(new_deals, f, ensure_ascii=False, indent=2)
+
+    print("✅ data.json 写入路径:", file_path)
+
+    # ===== 3️⃣ 推送（失败不影响提交）=====
+    try:
+        subprocess.run(["python", "send_push.py"])
+    except Exception as e:
+        print("Push 发送失败:", e)
+
+else:
+    print("没有新优惠，不更新文件")
