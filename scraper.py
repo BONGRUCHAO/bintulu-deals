@@ -10,7 +10,9 @@ print("正在请求 RSS 源:", RSS_URL)
 
 feed = feedparser.parse(RSS_URL)
 
-new_deals = []
+new_deals = [
+    {"title": f"Force Test {time.time()}"}
+]
 
 for entry in feed.entries[:5]:
     new_deals.append({
