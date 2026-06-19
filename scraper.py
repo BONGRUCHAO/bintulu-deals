@@ -16,9 +16,16 @@ new_deals = [
 ]
 
 for entry in feed.entries[:5]:
+
+    image_url = None
+
+    if "media_content" in entry:
+        image_url = entry.media_content[0]["url"]
+
     new_deals.append({
         "title": entry.title,
-        "link": entry.link
+        "link": entry.link,
+        "image": image_url
     })
 
 print("成功抓取到", len(new_deals), "条优惠")
