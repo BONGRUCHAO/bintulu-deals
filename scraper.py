@@ -37,7 +37,10 @@ try:
             json.dump(new_deals, f, ensure_ascii=False, indent=2)
         
         if os.path.exists("send_push.py"):
-            subprocess.run(["python", "send_push.py"])
+            try:
+                subprocess.run(["python", "send_push.py"], check=True)
+            except Exception as e:
+                print(f"⚠️ 通知发送失败，但不影响数据更新: {e}")
     else:
         print("💤 数据没有变化")
 
