@@ -1,29 +1,45 @@
+import requests
+from bs4 import BeautifulSoup
 import json
 import os
 import subprocess
 
-# ====== 1. 模拟抓取新数据 ======
-# 以后这里改成真实抓网页逻辑
-new_deals = [
-    {"title": "NEW PROMO 2026"}
-]
-# ====== 2. 读取旧数据 ======
+URL = "https://mbasic.facebook.com/ccfreshwholesale"
+
+headers = {
+    "User-Agent": "Mozilla/5.0"
+}
+
+response = requests.get(URL, headers=headers)
+soup = BeautifulSoup(response.text, "html.parser")
+
+posts = soup.find_all("div", {"data-ft": True})
+
+new_deals = []
+
+for post in posts[:5]:
+    text = post.get_text(separator=" ", strip=True)
+
+    if len(text) > 20:
+        new_deals.append({
+            "title": text[:120]
+        })
+
+# 读取旧数据
 if os.path.exists("data.json"):
     with open("data.json", "r", encoding="utf-8") as f:
         old_deals = json.load(f)
 else:
     old_deals = []
 
-# ====== 3. 对比新旧 ======
+# 对比
 if new_deals != old_deals:
 
-    print("发现新优惠，更新 data.json")
+    print("发现新优惠")
 
-    # 写入新数据
     with open("data.json", "w", encoding="utf-8") as f:
         json.dump(new_deals, f, ensure_ascii=False, indent=2)
 
-    # 触发推送
     subprocess.run(["python", "send_push.py"])
 
 else:
