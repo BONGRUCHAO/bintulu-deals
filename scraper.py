@@ -11,6 +11,11 @@ MARKETS = [
         "rss": "https://rss.app/feeds/pCThJgjEUu66piOP.xml"
     },
     {
+        "name": "Boulevard",
+        "source": "boulevard",
+        "rss": "https://rss.app/feeds/S2EAqffxEjE6oxIb.xml"
+    },
+    {
         "name": "Everwin Supermarket",
         "source": "everwin",
         "rss": "https://rss.app/feeds/B1pSp0iESHPUG4bx.xml"
