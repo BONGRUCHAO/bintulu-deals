@@ -1,65 +1,82 @@
-<h2>Bintulu 今日促销精选</h2>
-<p style="color: gray; font-size: 14px;">
-    共 {{ deals|length }} 条有效优惠（已过滤非促销内容）
-</p>
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Bintulu 超市优惠监控</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f4f4f4; }
+        h1 { text-align: center; color: #333; }
+        .market-section { background: #fff; border-radius: 10px; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .market-title { font-size: 24px; color: #d32f2f; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; }
+        .deal-card { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; transition: transform 0.2s; }
+        .deal-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .deal-title { font-weight: bold; font-size: 18px; margin-bottom: 10px; color: #222; }
+        .deal-image { width: 100%; max-height: 400px; object-fit: contain; border-radius: 6px; margin-bottom: 10px; background: #eee; }
+        .deal-link { display: inline-block; color: #1976d2; text-decoration: none; font-weight: bold; margin-top: 5px; }
+        .deal-link:hover { text-decoration: underline; }
+        .btn-push { display: block; width: 200px; margin: 30px auto; padding: 12px; background: #333; color: white; text-align: center; border-radius: 8px; cursor: pointer; border: none; font-size: 16px; }
+        .btn-push:hover { background: #555; }
+        .no-deals { color: #888; font-style: italic; }
+    </style>
+</head>
+<body>
 
-{% for d in deals %}
-<div style="
-    border: 2px solid #e0e0e0; 
-    border-radius: 8px; 
-    padding: 15px; 
-    margin: 20px auto; 
-    max-width: 500px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-">
+<h1>🛒 Bintulu 超级市场优惠汇总</h1>
 
-    <h3 style="margin: 0 0 10px 0;">{{ d.title }}</h3>
+<!-- ⭐️ 按超市分组展示 -->
+{% set grouped = deals | groupby('market') %}
 
-    {% if d.image %}
-        <img src="{{ d.image }}" 
-             style="width:100%; border-radius:6px;"
-             alt="促销图">
+{% for market, items in grouped %}
+<div class="market-section">
+    <div class="market-title">{{ market }}</div>
+    
+    {% if items %}
+        {% for d in items %}
+        <div class="deal-card">
+            <div class="deal-title">{{ d.title }}</div>
+            
+            {% if d.image %}
+                <img src="{{ d.image }}" alt="{{ d.title }}" class="deal-image">
+            {% endif %}
+            
+            <a href="{{ d.link }}" target="_blank" class="deal-link">
+                👉 查看原帖详情
+            </a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="no-deals">暂无最新优惠</p>
     {% endif %}
-
-    <div style="margin-top:10px;">
-        
-        {# 🔥 高亮匹配到的关键词 #}
-        {% if d.matched_keywords %}
-            <span style="
-                background: #ffe066; 
-                color: #333;
-                padding: 3px 8px; 
-                border-radius: 12px;
-                font-size: 12px;
-            ">
-                {{ d.matched_keywords | join(' · ') }}
-            </span>
-        {% endif %}
-
-        <a href="{{ d.link }}" 
-           target="_blank" 
-           style="
-               display: inline-block; 
-               margin-top: 10px; 
-               color: #0066cc;
-               text-decoration: none;
-           ">
-            🔗 查看原帖 →
-        </a>
-    </div>
-
 </div>
 {% endfor %}
 
 <hr>
-<button onclick="enablePush()" 
-        style="
-            background: #000; 
-            color: #fff; 
-            border: none; 
-            padding: 10px 20px; 
-            border-radius: 5px;
-            cursor: pointer;
-        ">
-    开启实时通知
-</button>
+<button onclick="enablePush()" class="btn-push">🔔 开启优惠通知</button>
+
+<script>
+async function enablePush(){
+    if (!("Notification" in window)) { alert("浏览器不支持通知"); return; }
+    const permission = await Notification.requestPermission();
+    if(permission !== "granted"){ alert("未允许通知"); return; }
+    
+    // 注册 Service Worker
+    navigator.serviceWorker.register("/static/sw.js").then(() => {
+        const reg = navigator.serviceWorker.ready.then(reg => {
+            return reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: "YOUR_VAPID_PUBLIC_KEY" 
+            });
+        });
+        const sub = await reg;
+        
+        fetch("/subscribe", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify(sub)
+        }).then(() => alert("✅ 通知已开启"));
+    }).catch(err => console.error(err));
+}
+</script>
+
+</body>
+</html>
