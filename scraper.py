@@ -21,6 +21,11 @@ MARKETS = [
         "rss": "https://rss.app/feeds/T3CJJciCuuTdZU8b.xml"
     },
     {
+        "name": "SING KWONG",
+        "source": "singkwong",
+        "rss": "https://rss.app/feeds/KxuEBW2965BgMH3l.xml"
+    },
+    {
         "name": "Everwin Supermarket",
         "source": "everwin",
         "rss": "https://rss.app/feeds/B1pSp0iESHPUG4bx.xml"
