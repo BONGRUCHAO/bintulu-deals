@@ -16,6 +16,11 @@ MARKETS = [
         "rss": "https://rss.app/feeds/S2EAqffxEjE6oxIb.xml"
     },
     {
+        "name": "Econsave",
+        "source": "econsave ",
+        "rss": "https://rss.app/feeds/T3CJJciCuuTdZU8b.xml"
+    },
+    {
         "name": "Everwin Supermarket",
         "source": "everwin",
         "rss": "https://rss.app/feeds/B1pSp0iESHPUG4bx.xml"
