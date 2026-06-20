@@ -67,24 +67,31 @@ for entry in feed.entries[:10]:
 
     title = entry.title or ""
     summary = entry.summary or ""
-    content = title + " " + summary
 
-    # ⭐️ 过滤非促销内容
-    if not is_promo(content):
-        print("跳过(非促销):", title[:40])
+    content = title + " " + summary
+    content_lower = content.lower()
+
+    print("\n====================")
+    print("原始内容:", content[:200])
+
+    match_keywords = [kw for kw in PROMO_KEYWORDS if kw in content_lower]
+
+    print("匹配关键词:", match_keywords)
+
+    if not any(word in content_lower for word in IMPORTANT_PRICE_WORDS):
+        print("❌ 没有价格核心词 → 跳过")
         continue
 
-    image_url = None
-    if "media_content" in entry:
-        try:
-            image_url = entry.media_content[0]["url"]
-        except:
-            pass
+    if len(match_keywords) < 2:
+        print("❌ 关键词不足2个 → 跳过")
+        continue
+
+    print("✅ 通过过滤:", title)
 
     new_deals.append({
         "title": title,
         "link": entry.link,
-        "image": image_url
+        "image": entry.media_content[0]["url"] if "media_content" in entry else None
     })
 
     print("✅ 保留:", title[:40])
