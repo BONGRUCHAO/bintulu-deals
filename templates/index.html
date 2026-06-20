@@ -213,9 +213,13 @@
             <div class="deal-card">
                 <div class="deal-title">{{ d.title }}</div>
                 
-                {% if d.image %}
-                    <img src="{{ d.image }}" alt="{{ d.title }}" class="deal-image" loading="lazy">
-                {% endif %}
+               {% if d.images %}
+    {% for img in d.images %}
+        <img src="{{ img }}" 
+             style="width:100%; border-radius:6px; margin:8px 0;"
+             loading="lazy">
+    {% endfor %}
+{% endif %}
                 
                 <a href="{{ d.link }}" target="_blank" class="deal-link">
                     👉 查看原帖详情
