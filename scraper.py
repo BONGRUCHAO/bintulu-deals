@@ -16,6 +16,21 @@ MARKETS = [
         "rss": "https://rss.app/feeds/S2EAqffxEjE6oxIb.xml"
     },
     {
+        "name": "Doremart",
+        "source": "doremart",
+        "rss": "https://rss.app/feeds/bRBqDaUPXCqH9QIu.xml"
+    },
+    {
+        "name": "New World Mart",
+        "source": "newworld",
+        "rss": "https://rss.app/feeds/mcY7198sT4xcZPc1.xml"
+    },
+     {
+        "name": "Farley",
+        "source": "farley",
+        "rss": "https://rss.app/feeds/cjYeT5rh0Ajauosn.xml"
+    },
+    {
         "name": "Econsave",
         "source": "econsave ",
         "rss": "https://rss.app/feeds/T3CJJciCuuTdZU8b.xml"
