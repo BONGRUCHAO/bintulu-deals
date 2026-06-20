@@ -1,285 +1,312 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bintulu 超市优惠监控</title>
+    <meta charset="UTF-8">
+    <title>Bintulu 超市优惠监控</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --text-color: #2c3e50;
+            --bg-light: #f8f9fa;
+        }
 
-<style>
-:root {
-    --primary-color: #3498db;
-    --text-color: #2c3e50;
-    --bg-light: #f8f9fa;
-}
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: var(--bg-light); 
+            color: #333; 
+            display: flex; /* 布局核心 */
+        }
 
-body {
-    font-family: 'Segoe UI', sans-serif;
-    margin: 0;
-    background: var(--bg-light);
-    display: flex;
-}
+        /* 📌 侧边栏样式 */
+        .sidebar {
+            width: 60px;
+            background: #fff;
+            border-right: 1px solid #ddd;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            text-align: center;
+            padding-top: 20px;
+            z-index: 100;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+        }
 
-/* ✅ 左侧字母导航 */
-.sidebar {
-    width: 60px;
-    background: #fff;
-    border-right: 1px solid #ddd;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    overflow-y: auto;
-    text-align: center;
-    padding-top: 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
-    z-index: 100;
-}
+        .letter-nav {
+            display: block;
+            padding: 8px 0;
+            font-size: 14px;
+            font-weight: bold;
+            color: #7f8c8d;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-.letter-nav {
-    display: block;
-    padding: 8px 0;
-    font-size: 14px;
-    font-weight: bold;
-    color: #7f8c8d;
-    cursor: pointer;
-    transition: all 0.2s;
-}
+        .letter-nav:hover {
+            color: var(--primary-color);
+            background: #ebf5fb;
+        }
 
-.letter-nav:hover {
-    color: var(--primary-color);
-    background: #ebf5fb;
-}
+        .letter-nav.active {
+            color: white;
+            background: var(--primary-color);
+            border-radius: 0 10px 10px 0;
+        }
 
-.letter-nav.active {
-    color: #fff;
-    background: var(--primary-color);
-    border-radius: 0 10px 10px 0;
-}
+        /* 📄 主内容区 */
+        .main-content {
+            margin-left: 60px; /* 留出侧边栏宽度 */
+            width: calc(100% - 60px);
+            padding: 30px;
+            scroll-behavior: smooth; /* 平滑滚动 */
+        }
 
-/* ✅ 主区域 */
-.main-content {
-    margin-left: 60px;
-    width: calc(100% - 60px);
-    padding: 30px;
-    scroll-behavior: smooth;
-}
+        h1 { 
+            text-align: center; 
+            color: var(--text-color); 
+            margin-bottom: 40px; 
+            font-size: 28px;
+        }
+        
+        /* 超市区块 */
+        .market-section { 
+            background: #fff; 
+            border-radius: 12px; 
+            padding: 25px; 
+            margin-bottom: 40px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-left: 8px solid #ccc;
+            opacity: 0;
+            animation: fadeIn 0.6s forwards;
+        }
 
-h1 {
-    text-align: center;
-    margin-bottom: 40px;
-    color: var(--text-color);
-}
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(20px); }
+        }
 
-/* ✅ 超市区块 */
-.market-section {
-    background: #fff;
-    border-radius: 12px;
-    padding: 25px;
-    margin-bottom: 40px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    border-left: 8px solid #ccc;
-}
+        /* 动态颜色边框 (根据市场名) */
+        .market-section[data-market^="C"] { border-left-color: #e74c3c; } /* CCFresh */
+        .market-section[data-market^="E"] { border-left-color: #3498db; } /* Everwin/Emart */
+        .market-section[data-market^="M"] { border-left-color: #f39c12; } /* MDS */
+        .market-section[data-market^="B"] { border-left-color: #9b59b6; } /* Boulevard */
+        
+        .market-title { 
+            font-size: 24px; 
+            font-weight: bold; 
+            color: var(--text-color); 
+            border-bottom: 1px solid #eee; 
+            padding-bottom: 10px; 
+            margin-bottom: 20px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .deal-count {
+            background: #ecf0f1;
+            color: #7f8c8d;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
 
-.market-section[data-market^="C"] { border-left-color: #e74c3c; }
-.market-section[data-market^="E"] { border-left-color: #3498db; }
-.market-section[data-market^="M"] { border-left-color: #f39c12; }
-.market-section[data-market^="B"] { border-left-color: #9b59b6; }
-.market-section[data-market^="S"] { border-left-color: #27ae60; }
-.market-section[data-market^="F"] { border-left-color: #1abc9c; }
-.market-section[data-market^="D"] { border-left-color: #34495e; }
-.market-section[data-market^="N"] { border-left-color: #8e44ad; }
+        .deal-card { 
+            border: 1px solid #eee; 
+            border-radius: 8px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            transition: transform 0.2s, box-shadow 0.2s; 
+            background: #fafafa;
+        }
+        .deal-card:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1); 
+            background: #fff;
+        }
+        
+        .deal-title { 
+            font-weight: 600; 
+            font-size: 17px; 
+            margin-bottom: 12px; 
+            line-height: 1.4;
+        }
+        
+        .deal-image { 
+            width: 100%; 
+            height: auto; 
+            max-height: 400px; 
+            object-fit: contain; 
+            border-radius: 6px; 
+            margin-bottom: 12px; 
+            display: block;
+        }
+        
+        .deal-link { 
+            display: inline-block; 
+            color: var(--primary-color); 
+            text-decoration: none; 
+            font-weight: 600; 
+            margin-top: 8px; 
+            background: #ebf5fb;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .deal-link:hover { background: #d6ebf8; }
+        
+        .btn-push { 
+            display: block; 
+            width: 220px; 
+            margin: 40px auto; 
+            padding: 14px; 
+            background: linear-gradient(135deg, #3498db, #2980b9); 
+            color: white; 
+            text-align: center; 
+            border-radius: 30px; 
+            cursor: pointer; 
+            border: none; 
+            font-size: 16px; 
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
 
-.market-title {
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.deal-count {
-    background: #ecf0f1;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 14px;
-}
-
-/* ✅ 优惠卡片 */
-.deal-card {
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-    background: #fafafa;
-    transition: 0.2s;
-}
-
-.deal-card:hover {
-    background: #fff;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-}
-
-.deal-title {
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-.deal-image {
-    width: 100%;
-    border-radius: 6px;
-    margin: 8px 0;
-}
-
-.deal-link {
-    display: inline-block;
-    background: #ebf5fb;
-    padding: 6px 12px;
-    border-radius: 20px;
-    text-decoration: none;
-    color: var(--primary-color);
-    font-size: 14px;
-}
-
-.deal-link:hover {
-    background: #d6ebf8;
-}
-
-.btn-push {
-    display: block;
-    width: 220px;
-    margin: 40px auto;
-    padding: 14px;
-    background: linear-gradient(135deg, #3498db, #2980b9);
-    color: #fff;
-    border-radius: 30px;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-/* ✅ 手机端 */
-@media (max-width: 768px) {
-    .sidebar { display: none; }
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-        padding: 15px;
-    }
-}
-</style>
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none; /* 手机端隐藏侧边栏，或可改为顶部横向滚动 */
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
-<!-- ✅ 左侧字母导航 -->
-<div class="sidebar" id="sidebar"></div>
-
-<div class="main-content">
-<h1>🛒 Bintulu 全区域超市优惠汇总</h1>
-
-{% set grouped = deals | groupby('market') %}
-
-{% for market, items in grouped | sort %}
-<div class="market-section"
-     data-market="{{ market }}"
-     id="market-{{ market|replace(' ', '-') }}">
-
-    <div class="market-title">
-        {{ market }}
-        <span class="deal-count">{{ items|length }} 条优惠</span>
-    </div>
-
-    {% for d in items %}
-    <div class="deal-card">
-        <div class="deal-title">{{ d.title }}</div>
-
-        {% if d.images %}
-    {% for img in d.images %}
-        <img src="{{ img }}" class="deal-image" loading="lazy">
-    {% endfor %}
-{% elif d.image %}
-    <img src="{{ d.image }}" class="deal-image" loading="lazy">
-{% endif %}
-        {% endif %}
-
-        <a href="{{ d.link }}" target="_blank" class="deal-link">
-            👉 查看原帖详情
-        </a>
-    </div>
-    {% endfor %}
+<!-- 🧭 左侧字母导航 -->
+<div class="sidebar" id="sidebar">
+    <!-- JS 会自动填充字母 A-Z -->
 </div>
-{% endfor %}
 
-<button onclick="enablePush()" class="btn-push">🔔 开启实时通知</button>
+<!-- 📄 主要内容 -->
+<div class="main-content">
+    <h1>🛒 Bintulu 全区域超市优惠汇总</h1>
+
+    {% set grouped = deals | groupby('market') %}
+
+    {% for market, items in grouped | sort(attribute=0) %}
+    
+    <div class="market-section" data-market="{{ market }}" id="market-{{ market }}">
+        <div class="market-title">
+            {{ market }}
+            <span class="deal-count">{{ items|length }} 条优惠</span>
+        </div>
+        
+        {% if items %}
+            {% for d in items %}
+            <div class="deal-card">
+                <div class="deal-title">{{ d.title }}</div>
+                
+                {% if d.image %}
+                    <img src="{{ d.image }}" alt="{{ d.title }}" class="deal-image" loading="lazy">
+                {% endif %}
+                
+                <a href="{{ d.link }}" target="_blank" class="deal-link">
+                    👉 查看原帖详情
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="text-align:center; color:#aaa;">暂无最新优惠</p>
+        {% endif %}
+    </div>
+
+    {% endfor %}
+
+    <button onclick="enablePush()" class="btn-push">🔔 开启实时通知</button>
 </div>
 
 <script>
-// ✅ 生成字母导航
+// === 1. 生成侧边栏导航 ===
 const sidebar = document.getElementById('sidebar');
-
 const markets = [
-{% for m, items in grouped | sort %}
+{% for m, items in grouped | sort(attribute=0) %}
     "{{ m }}",
 {% endfor %}
-];
+].map(m => m.trim()); // 去除可能的空格
 
-const uniqueLetters = [...new Set(markets.map(m => m[0].toUpperCase()))].sort();
+// 获取所有存在的字母
+const uniqueLetters = [...new Set(markets.map(m => m.toUpperCase().charAt(0)))].sort();
 
 uniqueLetters.forEach(letter => {
     const a = document.createElement('a');
+    a.href = '#';
     a.className = 'letter-nav';
     a.innerText = letter;
-
-    a.onclick = (e) => {
-        e.preventDefault();
-        scrollToLetter(letter, e);
-    };
-
+    a.onclick = () => scrollToMarket(letter);
     sidebar.appendChild(a);
 });
 
-function scrollToLetter(letter, e) {
-    const target = markets.find(m => m[0].toUpperCase() === letter);
-    if (!target) return;
-
-    const el = document.getElementById(
-        `market-${target.replace(/\s/g, '-')}`
-    );
-
-    if (el) {
-        window.scrollTo({
-            top: el.offsetTop - 20,
-            behavior: 'smooth'
-        });
-
-        document.querySelectorAll('.letter-nav')
-            .forEach(n => n.classList.remove('active'));
-
-        e.target.classList.add('active');
+// === 2. 滚动函数 ===
+function scrollToMarket(letter) {
+    const targetMarket = markets.find(m => m.toUpperCase().startsWith(letter));
+    if (targetMarket) {
+        const el = document.getElementById(`market-${targetMarket}`);
+        if (el) {
+            // 减去一些像素，让标题不会被顶部遮挡
+            window.scrollTo({
+                top: el.offsetTop - 20,
+                behavior: 'smooth'
+            });
+            
+            // 高亮当前按钮
+            document.querySelectorAll('.letter-nav').forEach(n => n.classList.remove('active'));
+            event.target.classList.add('active');
+        }
     }
 }
 
-// ✅ 推送功能
+// === 3. 监听滚动，自动高亮当前正在看的字母 ===
+window.addEventListener('scroll', () => {
+    let current = '';
+    markets.forEach(m => {
+        const section = document.getElementById(`market-${m}`);
+        if (section) {
+            const rect = section.getBoundingClientRect();
+            if (rect.top >= 0 && rect.top <= 150) {
+                current = m.charAt(0).toUpperCase();
+            }
+        }
+    });
+
+    if (current) {
+        document.querySelectorAll('.letter-nav').forEach(n => {
+            n.classList.toggle('active', n.innerText === current);
+        });
+    }
+});
+
+// === 4. 通知功能 ===
 async function enablePush(){
-    if (!("Notification" in window)) return alert("浏览器不支持通知");
-
+    if (!("Notification" in window)) { alert("浏览器不支持"); return; }
     const permission = await Notification.requestPermission();
-    if(permission !== "granted") return;
-
-    const reg = await navigator.serviceWorker.register("/static/sw.js");
-    const sub = await reg.pushManager.subscribe({
-        userVisibleOnly:true,
-        applicationServerKey:"YOUR_VAPID_PUBLIC_KEY"
-    });
-
-    await fetch("/subscribe",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(sub)
-    });
-
-    alert("✅ 通知已开启");
+    if(permission !== "granted"){ return; }
+    
+    try {
+        const reg = await navigator.serviceWorker.register("/static/sw.js");
+        const sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: "YOUR_VAPID_PUBLIC_KEY" 
+        });
+        await fetch("/subscribe", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(sub) });
+        alert("✅ 通知已开启");
+    } catch(e){ console.error(e); }
 }
 </script>
 
