@@ -11,26 +11,54 @@ print("正在请求 RSS 源:", RSS_URL)
 feed = feedparser.parse(RSS_URL)
 
 # ===== ✅ 促销关键词 =====
+# ===== ✅ 三语促销关键词 =====
+
 PROMO_KEYWORDS = [
-    "促销", "特价", "优惠", "打折", "减价",
+
+    # ===== 马来文 =====
+    "promosi", "jualan", "jualan murah", "tawaran",
+    "harga", "harga istimewa", "harga runtuh",
+    "murah", "termurah", "jimat",
+    "diskaun", "potongan",
+    "hari ahli", "ahli sahaja", "untuk ahli",
+    "stok terhad", "hujung minggu", "jumaat", "sabtu", "ahad",
+
+    # ===== 中文 =====
+    "促销", "优惠", "特价", "打折", "减价",
     "会员日", "会员价", "会员专享",
-    "特卖", "清仓", "限时", "买一送一",
-    "RM", "令吉",
+    "清仓", "限时", "买一送一",
+
+    # ===== 英文 =====
     "sale", "promo", "promotion",
-    "discount", "offer", "deal",
-    "member day", "member only"
+    "discount", "special", "offer",
+    "deal", "clearance",
+    "member day", "member only",
+
+    # ===== 通用价格 =====
+    "rm", "price", "cashback"
 ]
+
+
+# ✅ 价格核心词（必须出现其中一个）
+IMPORTANT_PRICE_WORDS = [
+    "rm", "harga", "price", "特价"
+]
+
 
 def is_promo(text):
     if not text:
         return False
 
     text_lower = text.lower()
-    for keyword in PROMO_KEYWORDS:
-        if keyword.lower() in text_lower:
-            return True
-    return False
 
+    # ✅ 必须包含价格核心词
+    if not any(word in text_lower for word in IMPORTANT_PRICE_WORDS):
+        return False
+
+    # ✅ 至少匹配 2 个关键词
+    match_count = sum(1 for kw in PROMO_KEYWORDS if kw in text_lower)
+
+    return match_count >= 2
 
 new_deals = []
 
