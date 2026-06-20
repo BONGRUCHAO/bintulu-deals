@@ -4,30 +4,100 @@
     <meta charset="UTF-8">
     <title>Bintulu 超市优惠监控</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #f5f7fa; color: #333; }
-        h1 { text-align: center; color: #2c3e50; margin-bottom: 40px; }
+        :root {
+            --primary-color: #3498db;
+            --text-color: #2c3e50;
+            --bg-light: #f8f9fa;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: var(--bg-light); 
+            color: #333; 
+            display: flex; /* 布局核心 */
+        }
+
+        /* 📌 侧边栏样式 */
+        .sidebar {
+            width: 60px;
+            background: #fff;
+            border-right: 1px solid #ddd;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            text-align: center;
+            padding-top: 20px;
+            z-index: 100;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+        }
+
+        .letter-nav {
+            display: block;
+            padding: 8px 0;
+            font-size: 14px;
+            font-weight: bold;
+            color: #7f8c8d;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .letter-nav:hover {
+            color: var(--primary-color);
+            background: #ebf5fb;
+        }
+
+        .letter-nav.active {
+            color: white;
+            background: var(--primary-color);
+            border-radius: 0 10px 10px 0;
+        }
+
+        /* 📄 主内容区 */
+        .main-content {
+            margin-left: 60px; /* 留出侧边栏宽度 */
+            width: calc(100% - 60px);
+            padding: 30px;
+            scroll-behavior: smooth; /* 平滑滚动 */
+        }
+
+        h1 { 
+            text-align: center; 
+            color: var(--text-color); 
+            margin-bottom: 40px; 
+            font-size: 28px;
+        }
         
         /* 超市区块 */
         .market-section { 
             background: #fff; 
             border-radius: 12px; 
             padding: 25px; 
-            margin-bottom: 30px; 
+            margin-bottom: 40px; 
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            border-left: 6px solid #e74c3c; /* 默认红色左边框 */
+            border-left: 8px solid #ccc;
+            opacity: 0;
+            animation: fadeIn 0.6s forwards;
         }
-        
-        /* 不同超市的边框颜色（可选） */
-        .market-section[data-market="CC Fresh"] { border-left-color: #e74c3c; }
-        .market-section[data-market="Everwin Supermarket"] { border-left-color: #3498db; }
-        .market-section[data-market="Emart Malaysia"] { border-left-color: #2ecc71; }
-        .market-section[data-market="MDS"] { border-left-color: #f39c12; }
-        .market-section[data-market="Boulevard"] { border-left-color: #9b59b6; }
 
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(20px); }
+        }
+
+        /* 动态颜色边框 (根据市场名) */
+        .market-section[data-market^="C"] { border-left-color: #e74c3c; } /* CCFresh */
+        .market-section[data-market^="E"] { border-left-color: #3498db; } /* Everwin/Emart */
+        .market-section[data-market^="M"] { border-left-color: #f39c12; } /* MDS */
+        .market-section[data-market^="B"] { border-left-color: #9b59b6; } /* Boulevard */
+        
         .market-title { 
-            font-size: 22px; 
+            font-size: 24px; 
             font-weight: bold; 
-            color: #2c3e50; 
+            color: var(--text-color); 
             border-bottom: 1px solid #eee; 
             padding-bottom: 10px; 
             margin-bottom: 20px; 
@@ -39,10 +109,9 @@
         .deal-count {
             background: #ecf0f1;
             color: #7f8c8d;
-            padding: 4px 10px;
-            border-radius: 15px;
+            padding: 4px 12px;
+            border-radius: 20px;
             font-size: 14px;
-            font-weight: normal;
         }
 
         .deal-card { 
@@ -57,14 +126,12 @@
             transform: translateY(-3px); 
             box-shadow: 0 6px 15px rgba(0,0,0,0.1); 
             background: #fff;
-            border-color: #ddd;
         }
         
         .deal-title { 
             font-weight: 600; 
             font-size: 17px; 
             margin-bottom: 12px; 
-            color: #34495e; 
             line-height: 1.4;
         }
         
@@ -75,22 +142,21 @@
             object-fit: contain; 
             border-radius: 6px; 
             margin-bottom: 12px; 
-            background: #f0f0f0; 
             display: block;
         }
         
         .deal-link { 
             display: inline-block; 
-            color: #3498db; 
+            color: var(--primary-color); 
             text-decoration: none; 
             font-weight: 600; 
             margin-top: 8px; 
-            font-size: 14px;
             background: #ebf5fb;
             padding: 6px 12px;
             border-radius: 20px;
+            font-size: 14px;
         }
-        .deal-link:hover { background: #d6ebf8; color: #2980b9; text-decoration: none; }
+        .deal-link:hover { background: #d6ebf8; }
         
         .btn-push { 
             display: block; 
@@ -106,84 +172,141 @@
             font-size: 16px; 
             font-weight: bold;
             box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
-            transition: transform 0.2s;
         }
-        .btn-push:hover { transform: scale(1.05); }
 
-        .no-deals { color: #95a5a6; font-style: italic; text-align: center; padding: 20px; }
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none; /* 手机端隐藏侧边栏，或可改为顶部横向滚动 */
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<h1>🛒 Bintulu 全区域超市优惠汇总</h1>
-
-<!-- 调试信息 (发布后可删除) -->
-<!-- <p>总条数: {{ deals|length }}</p> -->
-
-<!-- ⭐️ 核心逻辑：按 market 分组并排序 -->
-{% set grouped = deals | groupby('market') %}
-
-{% for market, items in grouped | sort(attribute=0) %}
-
-<div class="market-section" data-market="{{ market }}">
-    <div class="market-title">
-        {{ market }}
-        <span class="deal-count">{{ items|length }} 条优惠</span>
-    </div>
-    
-    {% if items %}
-        {% for d in items %}
-        <div class="deal-card">
-            <div class="deal-title">{{ d.title }}</div>
-            
-            {% if d.image %}
-                <!-- 懒加载图片以防加载慢 -->
-                <img src="{{ d.image }}" alt="{{ d.title }}" class="deal-image" loading="lazy">
-            {% endif %}
-            
-            <a href="{{ d.link }}" target="_blank" class="deal-link">
-                👉 查看原帖详情
-            </a>
-        </div>
-        {% endfor %}
-    {% else %}
-        <p class="no-deals">暂无最新优惠</p>
-    {% endif %}
+<!-- 🧭 左侧字母导航 -->
+<div class="sidebar" id="sidebar">
+    <!-- JS 会自动填充字母 A-Z -->
 </div>
 
-{% endfor %}
+<!-- 📄 主要内容 -->
+<div class="main-content">
+    <h1>🛒 Bintulu 全区域超市优惠汇总</h1>
 
-{% if not grouped %}
-    <p style="text-align:center; color:#7f8c8d;">⏳ 正在更新中，暂无数据...</p>
-{% endif %}
+    {% set grouped = deals | groupby('market') %}
 
-<hr style="border:0; border-top:1px solid #ddd; margin: 40px 0;">
-<button onclick="enablePush()" class="btn-push">🔔 开启实时通知</button>
+    {% for market, items in grouped | sort(attribute=0) %}
+    
+    <div class="market-section" data-market="{{ market }}" id="market-{{ market }}">
+        <div class="market-title">
+            {{ market }}
+            <span class="deal-count">{{ items|length }} 条优惠</span>
+        </div>
+        
+        {% if items %}
+            {% for d in items %}
+            <div class="deal-card">
+                <div class="deal-title">{{ d.title }}</div>
+                
+                {% if d.image %}
+                    <img src="{{ d.image }}" alt="{{ d.title }}" class="deal-image" loading="lazy">
+                {% endif %}
+                
+                <a href="{{ d.link }}" target="_blank" class="deal-link">
+                    👉 查看原帖详情
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="text-align:center; color:#aaa;">暂无最新优惠</p>
+        {% endif %}
+    </div>
+
+    {% endfor %}
+
+    <button onclick="enablePush()" class="btn-push">🔔 开启实时通知</button>
+</div>
 
 <script>
+// === 1. 生成侧边栏导航 ===
+const sidebar = document.getElementById('sidebar');
+const markets = [
+{% for m, items in grouped | sort(attribute=0) %}
+    "{{ m }}",
+{% endfor %}
+].map(m => m.trim()); // 去除可能的空格
+
+// 获取所有存在的字母
+const uniqueLetters = [...new Set(markets.map(m => m.toUpperCase().charAt(0)))].sort();
+
+uniqueLetters.forEach(letter => {
+    const a = document.createElement('a');
+    a.href = '#';
+    a.className = 'letter-nav';
+    a.innerText = letter;
+    a.onclick = () => scrollToMarket(letter);
+    sidebar.appendChild(a);
+});
+
+// === 2. 滚动函数 ===
+function scrollToMarket(letter) {
+    const targetMarket = markets.find(m => m.toUpperCase().startsWith(letter));
+    if (targetMarket) {
+        const el = document.getElementById(`market-${targetMarket}`);
+        if (el) {
+            // 减去一些像素，让标题不会被顶部遮挡
+            window.scrollTo({
+                top: el.offsetTop - 20,
+                behavior: 'smooth'
+            });
+            
+            // 高亮当前按钮
+            document.querySelectorAll('.letter-nav').forEach(n => n.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+    }
+}
+
+// === 3. 监听滚动，自动高亮当前正在看的字母 ===
+window.addEventListener('scroll', () => {
+    let current = '';
+    markets.forEach(m => {
+        const section = document.getElementById(`market-${m}`);
+        if (section) {
+            const rect = section.getBoundingClientRect();
+            if (rect.top >= 0 && rect.top <= 150) {
+                current = m.charAt(0).toUpperCase();
+            }
+        }
+    });
+
+    if (current) {
+        document.querySelectorAll('.letter-nav').forEach(n => {
+            n.classList.toggle('active', n.innerText === current);
+        });
+    }
+});
+
+// === 4. 通知功能 ===
 async function enablePush(){
-    if (!("Notification" in window)) { alert("您的浏览器不支持桌面通知"); return; }
+    if (!("Notification" in window)) { alert("浏览器不支持"); return; }
     const permission = await Notification.requestPermission();
-    if(permission !== "granted"){ alert("请允许通知以接收最新优惠"); return; }
+    if(permission !== "granted"){ return; }
     
     try {
         const reg = await navigator.serviceWorker.register("/static/sw.js");
         const sub = await reg.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: "YOUR_VAPID_PUBLIC_KEY" // ⚠️ 记得替换这里
+            applicationServerKey: "YOUR_VAPID_PUBLIC_KEY" 
         });
-        
-        await fetch("/subscribe", {
-            method: "POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify(sub)
-        });
-        
-        alert("✅ 通知已开启！有新优惠时会提醒您。");
-    } catch (err) {
-        console.error(err);
-        alert("注册通知失败，请稍后重试。");
-    }
+        await fetch("/subscribe", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(sub) });
+        alert("✅ 通知已开启");
+    } catch(e){ console.error(e); }
 }
 </script>
 
