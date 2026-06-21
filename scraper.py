@@ -23,7 +23,7 @@ MARKETS = [
     {
         "name": "New World Mart",
         "source": "newworld",
-        "rss": "https://rss.app/feeds/mcY7198sT4xcZPc1.xml"
+        "rss": "https://fetchrss.com/feed/1wbN5T18QA6t1wbN490K6Ecs.rss"
     },
      {
         "name": "Farley",
